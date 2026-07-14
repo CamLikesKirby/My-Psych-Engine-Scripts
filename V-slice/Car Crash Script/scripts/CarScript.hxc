@@ -22,6 +22,9 @@ class Car_script_CarScript extends ScriptedModule
 	var dadMaxX:Float;
 	var dadMaxY:Float;
 
+	var movementBoy:FlxTween;
+	var movementDad:FlxTween;
+
 	public function new()
 	{
 	super("Car_Script_car");
@@ -60,6 +63,8 @@ class Car_script_CarScript extends ScriptedModule
 
 		var char:Dynamic;
 
+		var tween:FlxTween;
+
 		if (event.note.noteData.getMustHitNote()) {
 		if (!Car_Script_CarScriptOptions.carScriptOptions.data.boyfriendCar) return;
 			posX = boyfriendPositionX;
@@ -69,6 +74,7 @@ class Car_script_CarScript extends ScriptedModule
 			maxY = boyfriendMaxY;
 
 			char = game.currentStage.getBoyfriend();
+			if (movementBoy != null) movementBoy.cancel();
 		} 
 		else {
 		if (!Car_Script_CarScriptOptions.carScriptOptions.data.dadCar) return;
@@ -79,15 +85,19 @@ class Car_script_CarScript extends ScriptedModule
 		maxY = dadMaxY;
 
 		char = game.currentStage.getDad();
+		if (movementDad != null) movementDad.cancel();
 		}
 
 		switch (event.note.direction)
 		{
-			case 0: FlxTween.tween(char, {x: -1 * maxX}, 0.6, {ease: FlxEase.expoIn,  onComplete: focusOn(char)});
-			case 1: FlxTween.tween(char, {y: maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
-			case 2: FlxTween.tween(char, {y: -1 * maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
-			case 3: FlxTween.tween(char, {x: maxX}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
+			case 0: tween = FlxTween.tween(char, {x: -1 * maxX}, 0.6, {ease: FlxEase.expoIn,  onComplete: focusOn(char)});
+			case 1: tween =  FlxTween.tween(char, {y: maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
+			case 2: tween = FlxTween.tween(char, {y: -1 * maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
+			case 3: tween = FlxTween.tween(char, {x: maxX}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
 		}
+
+		if (event.note.noteData.getMustHitNote()) movementBoy = tween;
+		else movementDad = tween;
 	}
 
     override function onUpdate(e:ScriptEvent):Void
@@ -95,16 +105,19 @@ class Car_script_CarScript extends ScriptedModule
 	var game = PlayState.instance;
 	if (game == null || game.isMinimalMode || game.isGameOverState) return;
 
+	// Detects if the player or oppoent are at the max x or y. If true, plays the car crash sound, cancels other tweens, and then puts them back to place.
 	if (game.currentStage.getBoyfriend().x >= boyfriendMaxX || game.currentStage.getBoyfriend().x <= (-1*boyfriendMaxX) || game.currentStage.getBoyfriend().y >= boyfriendMaxY || game.currentStage.getBoyfriend().y <= (-1*boyfriendMaxY) && Car_Script_CarScriptOptions.carScriptOptions.data.boyfriendCar) {
 	FunkinSound.playOnce(Paths.sound('carCrash'));
+	if (movementBoy != null) movementBoy.cancel();
 	FlxTween.tween(game.currentStage.getBoyfriend(), {x: boyfriendPositionX, y: boyfriendPositionY}, 2, {ease: FlxEase.expoOut});
-	new FlxTimer().start(2, function(_) { focusOn(game.currentStage.getBoyfriend(),true); });
+	new FlxTimer().start(2, function(_) { focusOn(game.currentStage.getDad(),true); });
 	}
 
 	if (game.currentStage.getDad().x >= dadMaxX || game.currentStage.getDad().x <= (-1*dadMaxX) || game.currentStage.getDad().y >= dadMaxY || game.currentStage.getDad().y <= (-1*dadMaxY) && Car_Script_CarScriptOptions.carScriptOptions.data.dadCar) {
 	FunkinSound.playOnce(Paths.sound('carCrash'));
+	if (movementDad != null) movementDad.cancel();
 	FlxTween.tween(game.currentStage.getDad(), {x: dadPositionX, y: dadPositionY}, 2, {ease: FlxEase.expoOut});
-	new FlxTimer().start(2, function(_) { focusOn(game.currentStage.getDad(),true); });
+	new FlxTimer().start(2, function(_) { focusOn(game.currentStage.getBoyfriend(),true); });
 	}
 	}
 
