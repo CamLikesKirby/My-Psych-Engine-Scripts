@@ -1,0 +1,52 @@
+import funkin.modding.module.Module;
+import funkin.ui.options.OptionsState;
+import flixel.util.FlxSave;
+import funkin.util.Constants;
+// From https://gamebanana.com/mods/521810
+
+class Car_Script_CarScriptOptions extends Module
+{
+    public function new()
+    {
+        super('CarScriptOptions');
+    }
+
+    public static var carScriptOptions:FlxSave = new FlxSave();
+
+    public function onStateChangeEnd(event:StateChangeScriptEvent)
+    {
+        saveShit();
+
+        if(Std.isOfType(event.targetState, OptionsState) && event.targetState.optionsCodex.pages.get("preferences") != null)
+        {
+
+            event.targetState.optionsCodex.pages.get("preferences").createPrefItemCheckbox('Car Crash Boyfriend', 
+            "If enabled, Boyfriend will go zoom.", function(value:Bool):Void
+            {
+            carScriptOptions.data.boyfriendCar = value;
+            carScriptOptions.flush();
+            }, carScriptOptions.data.boyfriendCar);
+
+            event.targetState.optionsCodex.pages.get("preferences").createPrefItemCheckbox('Car Crash Dad', 
+            "If enabled, Dad will go zoom.", function(value:Bool):Void
+            {
+            carScriptOptions.data.dadCar = value;
+            carScriptOptions.flush();
+            }, carScriptOptions.data.dadCar);
+
+            event.targetState.optionsCodex.pages.get("preferences").createPrefItemCheckbox('Try to Focus On Chars', 
+            "If enabled, the camera will try to focus on the character(s) while they're zooming.", function(value:Bool):Void
+            {
+            carScriptOptions.data.tryFocus = value;
+            carScriptOptions.flush();
+            }, carScriptOptions.data.tryFocus);
+        }
+    }
+
+    public static function saveShit() {
+    carScriptOptions.bind(Constants.SAVE_NAME + "carScriptOptions", Constants.SAVE_PATH);
+    if (carScriptOptions.data.boyfriendCar == null) carScriptOptions.data.boyfriendCar = true;
+    if (carScriptOptions.data.dadCar == null) carScriptOptions.data.dadCar = false;
+    if (carScriptOptions.data.tryFocus == null) carScriptOptions.data.tryFocus = true;
+    }
+}

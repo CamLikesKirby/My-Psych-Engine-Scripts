@@ -1,0 +1,118 @@
+import funkin.play.PlayState;
+import funkin.modding.module.ScriptedModule;
+import funkin.audio.FunkinSound;
+import funkin.Paths;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxSave;
+import flixel.util.FlxTimer;
+import Car_Script_CarScriptOptions;
+
+class Car_script_CarScript extends ScriptedModule
+{
+    var boyfriendPositionX:Float;
+	var boyfriendPositionY:Float;
+
+	var boyfriendMaxX:Float;
+	var boyfriendMaxY:Float;
+
+	var dadPositionX:Float;
+	var dadPositionY:Float;
+
+	var dadMaxX:Float;
+	var dadMaxY:Float;
+
+	public function new()
+	{
+	super("Car_Script_car");
+	}
+
+	override function onCountdownStart(event:CountdownScriptEvent):Void
+    {
+        super.onCountdownStart(event);
+
+		var game = PlayState.instance;
+		if (game.isMinimalMode) return;
+
+		boyfriendPositionX = game.currentStage.getBoyfriend().x;
+		boyfriendPositionY = game.currentStage.getBoyfriend().y;
+
+		boyfriendMaxX = boyfriendPositionX+5000;
+		boyfriendMaxY = boyfriendPositionY+5000;
+
+		dadPositionX = game.currentStage.getDad().x;
+		dadPositionY = game.currentStage.getDad().y;
+
+		dadMaxX = dadPositionX+5000;
+		dadMaxY = dadPositionY+5000;
+    }
+
+	override function onNoteHit(event:HitNoteScriptEvent):Void
+    {
+		var game = PlayState.instance;
+	    if (game.isMinimalMode) return;
+
+		var posX:Float;
+		var posY:Float;
+
+		var maxX:Float;
+		var maxY:Float;
+
+		var char:Dynamic;
+
+		if (event.note.noteData.getMustHitNote()) {
+		if (!Car_Script_CarScriptOptions.carScriptOptions.data.boyfriendCar) return;
+			posX = boyfriendPositionX;
+			posY = boyfriendPositionY;
+
+			maxX = boyfriendMaxX;
+			maxY = boyfriendMaxY;
+
+			char = game.currentStage.getBoyfriend();
+		} 
+		else {
+		if (!Car_Script_CarScriptOptions.carScriptOptions.data.dadCar) return;
+		posX = dadPositionX;
+		posY = dadPositionY;
+
+		maxX = dadMaxX;
+		maxY = dadMaxY;
+
+		char = game.currentStage.getDad();
+		}
+
+		switch (event.note.direction)
+		{
+			case 0: FlxTween.tween(char, {x: -1 * maxX}, 0.6, {ease: FlxEase.expoIn,  onComplete: focusOn(char)});
+			case 1: FlxTween.tween(char, {y: maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
+			case 2: FlxTween.tween(char, {y: -1 * maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
+			case 3: FlxTween.tween(char, {x: maxX}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char)});
+		}
+	}
+
+    override function onUpdate(e:ScriptEvent):Void
+    {
+	var game = PlayState.instance;
+	if (game == null || game.isMinimalMode || game.isGameOverState) return;
+
+	if (game.currentStage.getBoyfriend().x >= boyfriendMaxX || game.currentStage.getBoyfriend().x <= (-1*boyfriendMaxX) || game.currentStage.getBoyfriend().y >= boyfriendMaxY || game.currentStage.getBoyfriend().y <= (-1*boyfriendMaxY) && Car_Script_CarScriptOptions.carScriptOptions.data.boyfriendCar) {
+	FunkinSound.playOnce(Paths.sound('carCrash'));
+	FlxTween.tween(game.currentStage.getBoyfriend(), {x: boyfriendPositionX, y: boyfriendPositionY}, 2, {ease: FlxEase.expoOut});
+	new FlxTimer().start(2, function(_) { focusOn(game.currentStage.getBoyfriend(),true); });
+	}
+
+	if (game.currentStage.getDad().x >= dadMaxX || game.currentStage.getDad().x <= (-1*dadMaxX) || game.currentStage.getDad().y >= dadMaxY || game.currentStage.getDad().y <= (-1*dadMaxY) && Car_Script_CarScriptOptions.carScriptOptions.data.dadCar) {
+	FunkinSound.playOnce(Paths.sound('carCrash'));
+	FlxTween.tween(game.currentStage.getDad(), {x: dadPositionX, y: dadPositionY}, 2, {ease: FlxEase.expoOut});
+	new FlxTimer().start(2, function(_) { focusOn(game.currentStage.getDad(),true); });
+	}
+	}
+
+    function focusOn(char:Dynamic,resetCamera:Bool = false):Void 
+    { 
+    if (Car_Script_CarScriptOptions.carScriptOptions.data.tryFocus) {
+    PlayState.instance.cameraFollowPoint.setPosition(char.cameraFocusPoint.x, char.cameraFocusPoint.y); 
+    if (resetCamera) PlayState.instance.resetCamera(); 
+    }
+    }
+}
