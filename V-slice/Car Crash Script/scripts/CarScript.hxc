@@ -144,7 +144,10 @@ class Car_script_CarScript extends ScriptedModule
 
 	override function onSongEvent(event:SongEventScriptEvent)
 	{
-	if (event.eventData.eventKind == "FocusCamera") currentFocus = event.eventData.value.char;
+	if (event.eventData.eventKind == "FocusCamera") {
+	currentFocus = event.eventData.value.char;
+	if (currentFocus == null) currentFocus = event.eventData.value;
+	}
 	}
 
 	override function onBeatHit(event:SongTimeScriptEvent) 
