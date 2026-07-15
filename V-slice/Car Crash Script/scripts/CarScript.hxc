@@ -106,7 +106,7 @@ class Car_script_CarScript extends ScriptedModule
 		switch (event.note.direction)
 		{
 			case 0: tween = FlxTween.tween(char, {x: -1 * maxX}, 0.6, {ease: FlxEase.expoIn,  onComplete: focusOn(char,charNumber)});
-			case 1: tween =  FlxTween.tween(char, {y: maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char,charNumber)});
+			case 1: tween = FlxTween.tween(char, {y: maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char,charNumber)});
 			case 2: tween = FlxTween.tween(char, {y: -1 * maxY}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char,charNumber)});
 			case 3: tween = FlxTween.tween(char, {x: maxX}, 0.6, {ease: FlxEase.expoIn, onComplete: focusOn(char,charNumber)});
 		}
@@ -120,7 +120,7 @@ class Car_script_CarScript extends ScriptedModule
 	var game = PlayState.instance;
 	if (game == null || game.isMinimalMode || game.isGameOverState) return;
 
-	// Detects if the player or oppoent are at the max x or y. If true, plays the car crash sound, cancels other tweens, and then puts them back to place.
+	// Detects if the player or oppoent are at the max x or y. If true, plays the car crash sound, shakes the camera, cancels other tweens, and then puts them back to place.
 	if (game.currentStage.getBoyfriend().x >= boyfriendMaxX || game.currentStage.getBoyfriend().x <= (-1*boyfriendMaxX) || game.currentStage.getBoyfriend().y >= boyfriendMaxY || game.currentStage.getBoyfriend().y <= (-1*boyfriendMaxY) && options.boyfriendCar) {
 	FunkinSound.playOnce(Paths.sound('carCrash'));
 	FlxG.camera.shake(0.05, 0.5);
