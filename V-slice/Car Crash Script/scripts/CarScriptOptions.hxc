@@ -34,12 +34,12 @@ class Car_Script_CarScriptOptions extends Module
             carScriptOptions.flush();
             }, carScriptOptions.data.dadCar);
 
-            event.targetState.optionsCodex.pages.get("preferences").createPrefItemCheckbox('Try to Focus On Chars', 
-            "If enabled, the camera will try to focus on the character(s) while they're zooming.", function(value:Bool):Void
+            event.targetState.optionsCodex.pages.get("preferences").createPrefItemCheckbox('Focus Like Psych', 
+            "If enabled, the camera will focus on the character(s) like Psych Engine's camera system.", function(value:Bool):Void
             {
-            carScriptOptions.data.tryFocus = value;
+            carScriptOptions.data.focusLikePsych = value;
             carScriptOptions.flush();
-            }, carScriptOptions.data.tryFocus);
+            }, carScriptOptions.data.focusLikePsych);
         }
     }
 
@@ -47,6 +47,6 @@ class Car_Script_CarScriptOptions extends Module
     carScriptOptions.bind(Constants.SAVE_NAME + "carScriptOptions", Constants.SAVE_PATH);
     if (carScriptOptions.data.boyfriendCar == null) carScriptOptions.data.boyfriendCar = true;
     if (carScriptOptions.data.dadCar == null) carScriptOptions.data.dadCar = false;
-    if (carScriptOptions.data.tryFocus == null) carScriptOptions.data.tryFocus = true;
+    if (carScriptOptions.data.focusLikePsych == null) carScriptOptions.data.focusLikePsych = false;
     }
 }
