@@ -87,7 +87,7 @@ class Car_script_CarScript extends ScriptedModule
 			char = game.currentStage.getBoyfriend();
 			charNumber = 0;
 
-			if (movementBoy != null) movementBoy.cancel();
+			if (movementBoy != null && !options.chaos) movementBoy.cancel();
 		} 
 		else {
 		if (!options.dadCar) return;
@@ -100,7 +100,7 @@ class Car_script_CarScript extends ScriptedModule
 		char = game.currentStage.getDad();
 		charNumber = 1;
 
-		if (movementDad != null) movementDad.cancel();
+		if (movementDad != null && !options.chaos) movementDad.cancel();
 		}
 
 		switch (event.note.direction)
